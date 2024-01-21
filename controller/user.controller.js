@@ -133,9 +133,33 @@ let resetPassword = async (req, res, next) => {
         let hashedPassword = await bcryptjs.hash(password, salt);
         let updatedUser = await User.findOneAndUpdate({ email }, { password: hashedPassword }, { new: true })
 
-        return res.status(200).json({ error: false, message: "Password updated succesfully", data: { email, name: updatedUser.name } })
+        return res.status(200).json({ error: false, message: "Password updated succesfully, redirecting to Login", data: { email, name: updatedUser.name } })
     }
     catch (err) {
+        next(err)
+    }
+}
+
+let resetPasswordOTP = async(req, res, next) =>{
+    try{
+        let {email, password, otp} = req.body;
+
+        let isAvailable = await User.findOne({email})
+        if(!isAvailable){
+            return res.status(404).json({error:true, message:`user not found with email ${email}`})
+        }
+        if(isAvailable.otp == otp){
+            let salt = await bcryptjs.genSalt(10);
+            let hashedPassword = await bcryptjs.hash(password, salt);
+            let updatedUser = await User.findOneAndUpdate({ email }, { password: hashedPassword }, { new: true })
+
+            return res.status(200).json({ error: false, message: "Password updated succesfully", data: { email, name: updatedUser.name } })
+        }
+        else{
+            return res.status(404).json({error:true, message:`Invalid OTP`, data:{email, otp}})
+        }
+    }
+    catch(err){
         next(err)
     }
 }
@@ -204,6 +228,6 @@ let editProfile = async(req, res, next)=>{
     }
 }
 
-module.exports = { registerUser, loginUser, resetPassword, 
+module.exports = { registerUser, loginUser, resetPassword, resetPasswordOTP,
     getAllUsers, getSingleUser, sendOtp,
      verifyOtp, updateUser, editProfile }

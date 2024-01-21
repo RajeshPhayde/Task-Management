@@ -11,7 +11,7 @@ let TaskSchema = new Schema(
             type:String,
             required: [true, "Task name is mandatory"]
         },
-        discription:{
+        description:{
             type:String,
             required: true
         },

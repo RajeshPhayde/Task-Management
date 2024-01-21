@@ -4,12 +4,19 @@ require('dotenv').config();
 let addTask = async(req, res, next)=>{
     try
     {
-        let {userId,tName,discription,dueDate,priority}=req.body;
-
-        console.log("userId")
+        let {userId,tName,description,dueDate,priority}=req.body;
+        console.log(userId)
         userId=req.user._id;
 
-        let newTask=await Task.create({userId,tName,discription,dueDate,priority});
+        console.log(new Date(dueDate))
+        console.log(new Date())
+        console.log(new Date(dueDate) < new Date())
+       
+        if(new Date(dueDate) < new Date()){
+            return res.status(400).json({error:true, message:"Due date should be greater than current date", data:req.body})
+        }
+
+        let newTask=await Task.create({userId,tName,description,dueDate,priority});
 
         if(newTask)
         {
@@ -25,6 +32,22 @@ let addTask = async(req, res, next)=>{
 let getAllTasks = async(req, res, next)=>{
     try{
         let tasks = await Task.find();
+        console.log(tasks)
+
+        // tasks.forEach( async element => {
+        //     if(new Date(element.dueDate)<new Date()){
+        //         console.log("Hoiko")
+        //         let dTask = await Task.findOneAndDelete({_id:element._id})
+        //         console.log(dTask)
+        //     }
+        // });
+
+        //? let updatedTask = tasks.map(v =>{ return new Date(v.dueDate)<new Date()})
+        //? console.log(updatedTask)
+
+        tasks = await Task.find();
+        console.log(tasks)
+
         if(tasks.length){
             return res.status(200).json({error:false, message:"Task fetched succesfully", data:tasks})
         }
@@ -69,12 +92,16 @@ let updateTask =async (req, res, next)=>{
 let deleteTask =async (req, res, next)=>{
     try{
         let {id}=req.params;
-        let task = await Task.findById(id)
+        console.log(id)
+        let task = await Task.findOneAndDelete({_id:id})
+        console.log(task)
+
         if(!task){
             return res.status(404).json({error:true, message:"Task not found !!!"})
         }
-        let deletedTask = await Task.findOneAndDelete({_id:id})
-        return res.status(200).json({error:false, message:"Task deleted successfully", data:deletedTask})
+        // let deletedTask = await Task.findOneAndDelete({_id:id})
+        // return res.status(200).json({error:false, message:"Task deleted successfully", data:deletedTask})
+        return res.status(200).json({error:false, message:"Task deleted successfully"})
     }
     catch(err){
         next(err)
@@ -83,7 +110,9 @@ let deleteTask =async (req, res, next)=>{
 
 let userTask = async(req, res, next)=>{
     try{
+        console.log(req.user)
        let userId =req.user._id;
+       console.log(userId)
        let tasks = await Task.find({userId})
        if(tasks.length){
         return res.status(200).json({error:false, message:"Tasks fetched successfully", data:tasks})
