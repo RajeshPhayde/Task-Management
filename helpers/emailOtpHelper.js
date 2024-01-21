@@ -15,7 +15,7 @@ let invitationMailOTP = async (email, otp)=>{
         from : "ajnathahere@gmail.com",
         to : email,
         subject : "Invitation mail",
-        html : `<div><h1 style="color : red;">Welcome buddy</h1><p style="color : blue;">Thanks for Registering... your Otp is ${otp}</p></div>`
+        html : `<div><h1 style="color : red;">Welcome buddy</h1><h2 style="color : blue;">Thanks for Registering... your Otp is ${otp}</h2></div>`
     }, ()=>{console.log("Mail sent successfully with OTP")})
 
 }
