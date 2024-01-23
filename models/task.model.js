@@ -23,9 +23,13 @@ let TaskSchema = new Schema(
             type:String,
             required: true,
             enum:{
-                values : ["high", "medium", "low"],
-                message: "priority must be high, medium or low you entered {value}"
+                values : ["high", "low"],
+                message: "priority must be high or low you entered {value}"
             }
+        },
+        status:{
+            type: String,
+            default: "Pending"
         }
     },
     {

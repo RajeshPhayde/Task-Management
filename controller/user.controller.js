@@ -4,6 +4,9 @@ const jwt = require('jsonwebtoken')
 const Joi = require('joi');
 const { invitationMailOTP } = require('../helpers/emailOtpHelper');
 const otpGenerator = require('otp-generator');
+const validator = require('email-validator');
+// const emailValidator = require('node-email-verifier');
+// some issues with the node-email-verifier
 
 let userLogin = Joi.object({
     name: Joi.string().required().min(4).message({
@@ -21,6 +24,22 @@ let userLogin = Joi.object({
     })
 })
 
+let validateEmail = async (req, res, next)=>{
+    try{
+        let {email} = req.params;
+        // console.log(email)
+        let isValid = validator.validate(email);
+        // let isValid = await emailValidator(email);
+        console.log(isValid)
+        if(!isValid){
+            return res.status(400).json({error:true, message:`Please check your email and continue`})
+        }
+        return res.status(200).json({error:false, message:"Validation successfull", data:isValid})
+    }
+    catch(err){
+        next(err);
+    }
+}
 let registerUser = async (req, res, next) => {
     try {
         let { name, email, password, role } = req.body;
@@ -230,4 +249,4 @@ let editProfile = async(req, res, next)=>{
 
 module.exports = { registerUser, loginUser, resetPassword, resetPasswordOTP,
     getAllUsers, getSingleUser, sendOtp,
-     verifyOtp, updateUser, editProfile }
+     verifyOtp, updateUser, editProfile, validateEmail }

@@ -124,4 +124,20 @@ let userTask = async(req, res, next)=>{
     }
 }
 
-module.exports = {addTask, getAllTasks, singleTasks, updateTask, userTask, deleteTask}
+let taskCompleted = async(req, res, next)=>{
+    try{
+        let {id}=req.params;
+        let status = "Completed";
+        let findTask = await Task.findById(id)
+        if(!findTask){
+            return res.status(404).json({error:true, message:"Task Unavailable"})
+        }
+        let updatedTask = await Task.findOneAndUpdate({_id:id},{status},{new:true})
+        return res.status(200).json({error:false, message:"Task updated successfully", data:updatedTask})
+    }
+    catch(err){
+        next(err)
+    }
+}
+
+module.exports = {addTask, getAllTasks, singleTasks, updateTask, userTask, deleteTask,taskCompleted}

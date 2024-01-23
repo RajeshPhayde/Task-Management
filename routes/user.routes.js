@@ -1,5 +1,5 @@
 const express = require('express');
-const {registerUser, loginUser, resetPassword, getAllUsers, sendOtp, verifyOtp, getSingleUser, updateUser, editProfile} = require('../controller/user.controller');
+const {registerUser, loginUser, resetPassword, getAllUsers, sendOtp, verifyOtp, getSingleUser, updateUser, editProfile, validateEmail} = require('../controller/user.controller');
 const multer = require('multer');
 const { auth } = require('../service/authService');
 const path = require('path');
@@ -18,7 +18,7 @@ const myStorage = multer.diskStorage({
 
 const upload = multer({storage: myStorage})
 
-
+router.post("/validatemail/:email", validateEmail)
 router.post("/adduser", registerUser)
 router.post("/userlogin", loginUser)
 router.post("/resetpassword", resetPassword)
