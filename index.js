@@ -8,7 +8,7 @@ const TaskRoutes = require('./routes/task.routes');
 let app = express();
 
 app.use(express.json())
-app.use(cors());
+app.use(cors()); 
 app.use(express.static("public"))
 
 app.use("/api/user", UserRoutes )
